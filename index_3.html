@@ -26,7 +26,7 @@
 <div id="chat-container">
     <div id="header">
         <h2>匿名チャット (毎日21時自動消去)</h2>
-        <button id="clear-btn" id="clear-all-btn">ログを全削除</button>
+        <button id="clear-btn">ログを全削除</button>
     </div>
     <div id="messages"></div>
     <div id="input-area">
@@ -39,17 +39,15 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, increment, getDocs, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // --------------------------------------------------
-    // 【重要】あなたのFirebaseプロジェクトのコンフィグに差し替えてください
-    // --------------------------------------------------
-   const firebaseConfig = {
-  apiKey: "AIzaSyBNl085XeZfHiuerUWkUEXT5-gTrc96KwE",
-  authDomain: "test-31742.firebaseapp.com",
-  projectId: "test-31742",
-  storageBucket: "test-31742.firebasestorage.app",
-  messagingSenderId: "828848066600",
-  appId: "1:828848066600:web:8d0e1ae6fc77c8a90e651d"
-};
+    // Firebaseの接続設定（あなたのプロジェクトのものをそのまま維持しています）
+    const firebaseConfig = {
+        apiKey: "AIzaSyBNl085XeZfHiuerUWkUEXT5-gTrc96KwE",
+        authDomain: "test-31742.firebaseapp.com",
+        projectId: "test-31742",
+        storageBucket: "test-31742.firebasestorage.app",
+        messagingSenderId: "828848066600",
+        appId: "1:828848066600:web:8d0e1ae6fc77c8a90e651d"
+    };
 
     // Firebaseの初期化
     const app = initializeApp(firebaseConfig);
@@ -64,11 +62,9 @@
     // 21:00以降の古いメッセージを自動クリーンアップする関数
     async function checkAndCleanupOldMessages() {
         const now = new Date();
-        // 今日の21:00のタイムスタンプを作成
         const targetTime = new Date();
         targetTime.setHours(21, 0, 0, 0);
 
-        // もし現在時刻が21:00を過ぎていたら、それ以前のメッセージを検索して削除
         if (now >= targetTime) {
             const q = query(messagesRef, where("createdAt", "<", targetTime));
             const querySnapshot = await getDocs(q);
@@ -88,7 +84,7 @@
         });
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
         
-        // 誰かが開いたり動いたりしたタイミングで21時消去のチェックを走らせる
+        // 21時消去のチェックを走らせる
         checkAndCleanupOldMessages();
     });
 
@@ -136,7 +132,7 @@
             </div>
         `;
 
-        // リアクションボタンのイベントリスナー設定
+        // リアクションボタンのイベント
         msgEl.querySelectorAll('.react-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const emoji = btn.getAttribute('data-emoji');
@@ -146,7 +142,7 @@
             });
         });
 
-        // 個別削除ボタンのイベントリスナー設定
+        // 個別削除ボタンのイベント
         msgEl.querySelector('.delete-btn').addEventListener('click', () => {
             if (confirm('このメッセージを削除しますか？')) {
                 deleteDoc(doc(db, "chats", id));
